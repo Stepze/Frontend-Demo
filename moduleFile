@@ -1,0 +1,13 @@
+#Example of a module file
+#Comments start with a hashtag.
+#The @ sign marks the beginning of a new module.
+#The operator dependencies between the values of addresses are written in json format.
+#The following example will demonstrate how to create new entries.
+
+
+
+@Modem
+{"address": "K", "K-1":"-1"}
+
+@MAC
+{"address": "MCS", "FER":""}
