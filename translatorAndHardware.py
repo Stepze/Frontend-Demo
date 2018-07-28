@@ -5,16 +5,17 @@ from U64JsonTranslator import U64JsonTranslator
 from DummyHardware import DummyHardware
 
 import time
+import sys
+import PyQt5.QtWidgets
 
 
 def main():
-	
 	transToHard = DirectConnection()
 	appToTrans = UdpConnection("127.0.0.1",40001,40000)
 	trans = U64JsonTranslator(transToHard,appToTrans,3)
+	app = PyQt5.QtWidgets.QApplication(sys.argv)
 	hard = DummyHardware(transToHard,4)
-	while True:
-		time.sleep(1)
+	sys.exit(app.exec_())
 
 
 if __name__ == "__main__":

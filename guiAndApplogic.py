@@ -19,7 +19,7 @@ def main():
 	stop = timeit.default_timer()
 	print(str(stop-start)+" guictrl")
 
-	applgc = ApplicationLogic(guiToApp,appToTrans,"moduleFile",1,2)
+	applgc = ApplicationLogic(guiToApp,appToTrans,"moduleFile",5,2)
 	
 	sys.exit(app.exec_())
 	

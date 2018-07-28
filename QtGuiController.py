@@ -103,7 +103,8 @@ class QtGuiController(AbstractGuiController):
 				jsonList = self.guiToJson()
 				for i in jsonList:
 					self.connection.send(i,self.id)
-				self.refreshRequested = False
+				self.refreshRequested = False#
+			time.sleep(0.05)
 				
 
 
