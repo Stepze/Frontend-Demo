@@ -4,9 +4,17 @@ from threading import Thread
 import struct
 import json
 ##
-## @brief      Class for u 64 json translator.
+## @brief      Class for u64-json-translator, derives from Thread
 ##
 class U64JsonTranslator(Thread):
+	##
+	## @brief      Constructs the object, sets it as a daemonic thread and starts the run-loop
+	##
+	## @param      self         The object
+	## @param      u64_stream   The u64 connection
+	## @param      json_stream  The json connection
+	## @param      instance_id  The unique identifier for the instance
+	##
 	def __init__(self,u64_stream,json_stream,instance_id):
 		Thread.__init__(self)
 		self.setDaemon(True)
@@ -19,12 +27,12 @@ class U64JsonTranslator(Thread):
 		self.start()
 
 	##
-	## @brief      { function_description }
+	## @brief      converts the binary u64 to a readable json-object
 	##
 	## @param      self  The object
-	## @param      u64   The u64
+	## @param      u64   The u64 binary
 	##
-	## @return     { description_of_the_return_value }
+	## @return     json object
 	##
 	def u64_to_json(self,u64):
 		module_id = (struct.unpack('>H',u64[0:2])[0] & int(b'0011111110000000',2))//(2**7)
@@ -53,12 +61,12 @@ class U64JsonTranslator(Thread):
 		
 
 	##
-	## @brief      { function_description }
+	## @brief      converts the readable json-object to an unsigned 64 bit number -> u64
 	##
-	## @param      self        The object
-	## @param      jsonobject  The jsonobject
+	## @param      self        
+	## @param      jsonobject  jsonobject
 	##
-	## @return     { description_of_the_return_value }
+	## @return     u64 as string
 	##
 	def json_to_u64(self,jsonobject):
 		data = json.loads(jsonobject)
@@ -86,11 +94,11 @@ class U64JsonTranslator(Thread):
 			return [upper,lower]
 
 	##
-	## @brief      { function_description }
+	## @brief      main-loop of the translator, peridodically checks both connections for input, translates it and forwards the translated data
 	##
-	## @param      self  The object
+	## @param      self  
 	##
-	## @return     { description_of_the_return_value }
+	## @return     None
 	##
 	def run(self):
 		while True:

@@ -109,11 +109,13 @@ class QtGuiController(AbstractGuiController):
 
 
 	##
-	## @brief      { function_description }
+	## @brief      Since the application logic sends json-objects to the gui-controller, the gui-controller has to find 
+	## @brief      the corresponding gui-element to update it. This is done by extracting a key out of the json-object
+	## @brief      and looking up the corresponding element in the idLayoutDict 
 	##
 	## @param      self  The object
 	##
-	## @return     { description_of_the_return_value }
+	## @return     None
 	##
 	def jsonToGui(self):
 		self.receivedJSON = self.connection.receive(self.id)			
@@ -125,11 +127,13 @@ class QtGuiController(AbstractGuiController):
 			self.writeData(key, _buffer["value"])
 	
 	##
-	## @brief      { function_description }
+	## @brief      To be able to send the data of the gui-elements it is necessary that json-objects are constructed.
+	## @brief      This is done by this mehtod. The json-object has 2 entries: key and value
+	## @brief      This is done for all gui-elements in the idLayoutDict.
 	##
 	## @param      self  The object
 	##
-	## @return     { description_of_the_return_value }
+	## @return     a list of json-objects
 	##
 	def guiToJson(self):
 		jsonList = []

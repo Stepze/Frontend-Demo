@@ -1,0 +1,38 @@
+<?xml version = "1.0"?>
+<data>
+	<module name="Modem" number="1">
+		<address name="K" number="1">
+			<command>4</command>
+		</address>
+	
+		<address name="K-1" number="2">
+			<command>4</command>
+		</address>
+	
+		<address name="CP" number="3">
+			<command>4</command>
+		</address>
+
+		<address name="CP" number="4">
+			<command>4</command>
+		</address>
+
+		<address name="Signal Power" number="5">
+			<command>5</command>
+		</address>
+
+	</module>
+
+	<module name="MAC" number="2">
+		<address name="MCS" number="1">
+			<command>4</command>
+		</address>
+	
+		<address name="FER" number="2">
+			<command>5</command>
+		</address>
+	
+	</module>
+</data>
+
+

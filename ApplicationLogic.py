@@ -2,6 +2,7 @@
 import time
 import json
 import threading
+import xml.etree.ElementTree
 from ModuleRepresentation import Module
 
 
@@ -20,14 +21,14 @@ class ApplicationLogic(threading.Thread):
 	## @param      updateTime		The timespan after which an update of the value of the read-only gui elements should be requested
 	## @param      idx              The identification number for the connections
 	##
-	def __init__(self,gui_conn,translator_conn,module_file,updateTime,idx):
+	def __init__(self,gui_conn,translator_conn,module_file,gui_hardware_file,updateTime,idx):
 		threading.Thread.__init__(self)
 		self.gui_conn = gui_conn
 		self.translator_conn = translator_conn
 		self.id = idx
 		self.gui_conn.register(self.id)
 		self.translator_conn.register(self.id)
-		self.createGuiHardwareDict()
+		self.createGuiHardwareDict(gui_hardware_file)
 		self.moduleList = Module.createModules(module_file)
 
 		self.mainTask()
@@ -77,8 +78,8 @@ class ApplicationLogic(threading.Thread):
 	def getPeriodicalUpdates(self,updateTime):
 		while True:
 			for i in self.guiToPhyList:
-				if i[2][1] == "rr":
-					jsonDict = {"module":i[0][0],"command":i[2][0],"address":i[1][0],"value":0}
+				if i[2] == 5:
+					jsonDict = {"module":i[0][0],"command":i[2],"address":i[1][0],"value":0}
 					self.translator_conn.send(json.JSONEncoder().encode(jsonDict),self.id)
 			time.sleep(updateTime)
 
@@ -98,16 +99,15 @@ class ApplicationLogic(threading.Thread):
 			element = [x for x in self.guiToPhyList if [x[0][1],x[1][1]] == jsonDict["key"]]
 			element = element.pop()
 			element[3] = jsonDict["value"]
-			if element[2][1]=="dn":							#dn - do nothing - to be replaced with a different action
-				return
-			jsonDict = [{"module":element[0][0],"command":element[2][0],"address":element[1][0],"value":element[3]}]
+			
+			jsonDict = [{"module":element[0][0],"command":element[2],"address":element[1][0],"value":element[3]}]
 			module = [x for x in self.moduleList if x.moduleName == element[0][1]].pop()
 			dependantAddressesAndValues = module.getDependantValues(element[1][1],element[3])
 			dependantElements = [x for x in self.guiToPhyList if (x[0][1] == element[0][1] and x[1][1] in [i[0] for i in dependantAddressesAndValues])]
 			for i in dependantElements:
 				for j in dependantAddressesAndValues:
 					if i[1][1] == j[0]:
-						jsonDict.append({"module":i[0][0],"command":i[2][0],"address":i[1][0],"value":j[1]})
+						jsonDict.append({"module":i[0][0],"command":i[2],"address":i[1][0],"value":j[1]})
 						i[3] = j[1]
 			for i in jsonDict:
 				self.translator_conn.send(json.JSONEncoder().encode(i),self.id)
@@ -126,24 +126,38 @@ class ApplicationLogic(threading.Thread):
 			for i in self.guiToPhyList:
 				if jsonDict["module"] == i[0][0] and jsonDict["address"] == i[1][0]:
 					i[3] = jsonDict["value"]
-					if i[2][1] == "rr":
+					if i[2] == 5:
 						jsonDict = {"key":(i[0][1],i[1][1]),"value":i[3]}
 						self.gui_conn.send(json.JSONEncoder().encode(jsonDict),self.id)
 					break
 
 
 	##
-	## @brief      Creates a gui-hardware dictionary. To be later read from a file.
+	## @brief      Creates a gui-hardware dictionary-list which is read from a xml file.
 	##
 	## @param      self  The object
 	##
 	## @return     None
 	##
-	def createGuiHardwareDict(self):
-		self.guiToPhyList = [[(1,"Modem"),(1,"K"),(4,"wr"),0],
-					[(1,"Modem"),(2,"K-1"),(4,"wr"),0],
-					[(1,"Modem"),(3,"1/4K"),(0,"dn"),0],
-					[(1,"Modem"),(3,"CP"),(4,"wr"),0],
-					[(1,"Modem"),(4,"Signal Power"),(5,"rr"),0],
-					[(2,"MAC"),(1,"MCS"),(4,"wr"),0],
-					[(2,"MAC"),(2,"FER"),(5,"rr"),0]]
+	def createGuiHardwareDict(self,guiHardwareFile):
+		self.guiToPhyList = []
+		tree = xml.etree.ElementTree.parse(guiHardwareFile+'.xml')
+		root = tree.getroot()
+		for module in root.findall('module'):
+			name = module.attrib["name"]
+			number = int(module.attrib["number"])
+			for address in module.findall('address'):
+				addrName = address.attrib["name"]
+				addrNumber = int(address.attrib["number"])
+				command = int(address.find('command').text)
+				self.guiToPhyList.append([(number,name),(addrNumber,addrName),command,0])
+
+	## Sample of a possible guiToPhyList
+	## self.guiToPhyList = [[(1,"Modem"),(1,"K"),4,0],
+	##			[(1,"Modem"),(2,"K-1"),4,0],
+	##			[(1,"Modem"),(3,"CP"),4,0],
+	##			[(1,"Modem"),(4,"Signal Power"),5,0],
+	##			[(2,"MAC"),(1,"MCS"),4,0],
+	##			[(2,"MAC"),(2,"FER"),5,0]]
+	##
+		

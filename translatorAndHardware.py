@@ -8,7 +8,13 @@ import time
 import sys
 import PyQt5.QtWidgets
 
-
+##
+## @brief      this function starts the dummy-hardware and the U64-JSON-translator
+## @brief      connection between dummy-hardware and the translator is direct, the connection between translator and 
+## @brief      application logic is done via udp
+##
+## @return     None
+##
 def main():
 	transToHard = DirectConnection()
 	appToTrans = UdpConnection("127.0.0.1",40001,40000)
