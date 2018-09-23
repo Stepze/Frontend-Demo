@@ -14,12 +14,9 @@ def main():
 	app = QApplication(sys.argv)
 	guiToApp = DirectConnection()
 	appToTrans = UdpConnection("127.0.0.1",40000,40001)
-	start = timeit.default_timer()
 	guictrl = QtGuiController("layout",guiToApp,1)
-	stop = timeit.default_timer()
-	print(str(stop-start)+" guictrl")
 
-	applgc = ApplicationLogic(guiToApp,appToTrans,"moduleFile","guiHardwareDict",5,2)
+	applgc = ApplicationLogic(guiToApp,appToTrans,"ModuleFile",5,2)
 	
 	sys.exit(app.exec_())
 	

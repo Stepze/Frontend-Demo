@@ -1,8 +1,12 @@
 <?xml version = "1.0"?>
 <data>
 	<module name="Modem" number="1">
+		<!--The number can be seen as the hardware address, whereas the name is a more verbose description which is used for the GUI-->
 		<address name="K" number="1">
+			<!--The command of each address is directly associated with the 4 "task-bits" in the u64-->
 			<command>4</command>
+			<!--The dependencies are for the ModuleRepresentation class -->
+			<dependency target="K-1">-1</dependency>
 		</address>
 	
 		<address name="K-1" number="2">
@@ -13,11 +17,7 @@
 			<command>4</command>
 		</address>
 
-		<address name="CP" number="4">
-			<command>4</command>
-		</address>
-
-		<address name="Signal Power" number="5">
+		<address name="Signal Power" number="4">
 			<command>5</command>
 		</address>
 

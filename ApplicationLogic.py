@@ -21,14 +21,14 @@ class ApplicationLogic(threading.Thread):
 	## @param      updateTime		The timespan after which an update of the value of the read-only gui elements should be requested
 	## @param      idx              The identification number for the connections
 	##
-	def __init__(self,gui_conn,translator_conn,module_file,gui_hardware_file,updateTime,idx):
+	def __init__(self,gui_conn,translator_conn,module_file,updateTime,idx):
 		threading.Thread.__init__(self)
 		self.gui_conn = gui_conn
 		self.translator_conn = translator_conn
 		self.id = idx
 		self.gui_conn.register(self.id)
 		self.translator_conn.register(self.id)
-		self.createGuiHardwareDict(gui_hardware_file)
+		self.createGuiHardwareDict(module_file)
 		self.moduleList = Module.createModules(module_file)
 
 		self.mainTask()
@@ -99,7 +99,7 @@ class ApplicationLogic(threading.Thread):
 			element = [x for x in self.guiToPhyList if [x[0][1],x[1][1]] == jsonDict["key"]]
 			element = element.pop()
 			element[3] = jsonDict["value"]
-			
+
 			jsonDict = [{"module":element[0][0],"command":element[2],"address":element[1][0],"value":element[3]}]
 			module = [x for x in self.moduleList if x.moduleName == element[0][1]].pop()
 			dependantAddressesAndValues = module.getDependantValues(element[1][1],element[3])
@@ -139,9 +139,9 @@ class ApplicationLogic(threading.Thread):
 	##
 	## @return     None
 	##
-	def createGuiHardwareDict(self,guiHardwareFile):
+	def createGuiHardwareDict(self,module_file):
 		self.guiToPhyList = []
-		tree = xml.etree.ElementTree.parse(guiHardwareFile+'.xml')
+		tree = xml.etree.ElementTree.parse(module_file+'.xml')
 		root = tree.getroot()
 		for module in root.findall('module'):
 			name = module.attrib["name"]
